@@ -67,7 +67,7 @@ async def setup_chat_with_memory(
     +++++
     - {{$fact1}} {{recall $fact1}}
     - {{$fact2}} {{recall $fact2}}
-    - {{$fact3}} {{recall $fact3}}
+    - {{recall $fact3}}
     +++++
 
     Chat:
