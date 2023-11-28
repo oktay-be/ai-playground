@@ -32,10 +32,10 @@ async def populate_memory(kernel: sk.Kernel) -> None:
         "aboutMe", id="info4", text="I visited France and Italy five times since 2015"
     )
     await kernel.memory.save_information_async(
-        "aboutMe", id="info5", text="My family is from New York"
+        "aboutMe", id="info5", text="I received my postgraduate degree in 2010"
     )
     await kernel.memory.save_information_async(
-        "aboutMe", id="info5", text="I have 3 kids"
+        "aboutMe", id="info6", text="I have 3 kids"
     )
 
 
@@ -68,6 +68,7 @@ async def setup_chat_with_memory(
     - {{$fact1}} {{recall $fact1}}
     - {{$fact2}} {{recall $fact2}}
     - {{recall $fact3}}
+    - {{recall $fact4}}
     +++++
 
     Chat:
@@ -84,6 +85,7 @@ async def setup_chat_with_memory(
     context["fact1"] = "what is my name?"
     context["fact2"] = "where do I live?"
     context["fact3"] = "How many poeple are there in my family?"
+    context["fact4"] = "When did I graduate from college?"
 
 
     context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "aboutMe"
