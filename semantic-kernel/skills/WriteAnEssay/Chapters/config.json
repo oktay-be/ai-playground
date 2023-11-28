@@ -12,7 +12,7 @@
     "input": {
         "parameters": [
             {
-                "name": "input",
+                "name": "title",
                 "description": "Title.",
                 "defaultValue": "",
                 "required": true

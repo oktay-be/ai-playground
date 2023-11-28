@@ -64,7 +64,13 @@ context_variables['subtitle'] = altbaslik.result
 Chapters = writeAnEssay['Chapters']
 chapters = Chapters(variables=context_variables)
 
+Resources = ["https://www.zenbusiness.com/blog/home-office-hazards/"]
+
 print(chapters.result)
+
+# Print here proposed chapters. Get input and overwrite chapters if necessary
+
+# Use local embeddings vs use azure ada embeddings. Kullaniciya sectir
 
 
 if response.error_occurred:
