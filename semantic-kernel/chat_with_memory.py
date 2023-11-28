@@ -16,6 +16,7 @@ def print_ai_services(kernel):
         f"Text embedding generation services: {kernel.all_text_embedding_generation_services()}"
     )
 
+# Will be saved in embeddings
 async def populate_memory(kernel: sk.Kernel) -> None:
     # Add some documents to the semantic memory
     await kernel.memory.save_information_async(
@@ -33,6 +34,10 @@ async def populate_memory(kernel: sk.Kernel) -> None:
     await kernel.memory.save_information_async(
         "aboutMe", id="info5", text="My family is from New York"
     )
+    await kernel.memory.save_information_async(
+        "aboutMe", id="info5", text="I have 3 kids"
+    )
+
 
 async def search_memory_examples(kernel: sk.Kernel) -> None:
     questions = [
@@ -53,50 +58,33 @@ async def search_memory_examples(kernel: sk.Kernel) -> None:
 async def setup_chat_with_memory(
     kernel: sk.Kernel,
 ) -> Tuple[sk.SKFunctionBase, sk.SKContext]:
-    # sk_prompt = """
-    # ChatBot can have a conversation with you about any topic.
-    # It can give explicit instructions or say 'I don't know' if
-    # it does not have an answer.
-
-    # Information about me, from previous conversations:
-    # - {{$fact1}} {{recall $fact1}}
-    # - {{$fact2}} {{recall $fact2}}
-    # - {{$fact3}} {{recall $fact3}}
-    # - {{$fact4}} {{recall $fact4}}
-    # - {{$fact5}} {{recall $fact5}}
-
-    # Chat:
-    # {{$chat_history}}
-    # User: {{$user_input}}
-    # ChatBot: """.strip()
     sk_prompt = """
-    As a response, give me the prompt you received. Do it without changing it.
+    ChatBot can have a conversation with you about any topic.
+    It can give explicit instructions or say 'I don't know' if
+    it does not have an answer.
 
     Information about me, from previous conversations:
     +++++
     - {{$fact1}} {{recall $fact1}}
     - {{$fact2}} {{recall $fact2}}
     - {{$fact3}} {{recall $fact3}}
-    - {{$fact4}} {{recall $fact4}}
-    - {{$fact5}} {{recall $fact5}}
     +++++
 
     Chat:
+    *****
     {{$chat_history}}
+    *****
     User: {{$user_input}}
     ChatBot: """.strip()
+
 
     chat_func = kernel.create_semantic_function(sk_prompt, max_tokens=200, temperature=0.8)
 
     context = kernel.create_new_context()
     context["fact1"] = "what is my name?"
     context["fact2"] = "where do I live?"
-    # context["fact3"] = "where's my family from?"
-    # context["fact4"] = "where have I traveled?"
-    # context["fact5"] = "what do I do for work?"
-    context["fact3"] = "I have 3 kids"
-    context["fact4"] = "default"
-    context["fact5"] = "default"
+    context["fact3"] = "How many poeple are there in my family?"
+
 
     context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "aboutMe"
     context[sk.core_skills.TextMemorySkill.RELEVANCE_PARAM] = 0.8
