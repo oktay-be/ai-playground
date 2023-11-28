@@ -94,7 +94,7 @@ async def setup_chat_with_memory(
     # context["fact3"] = "where's my family from?"
     # context["fact4"] = "where have I traveled?"
     # context["fact5"] = "what do I do for work?"
-    context["fact3"] = "Where does the President of the US live?"
+    context["fact3"] = "I have 3 kids"
     context["fact4"] = "default"
     context["fact5"] = "default"
 
