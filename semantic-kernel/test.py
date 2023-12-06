@@ -1,7 +1,7 @@
 import semantic_kernel as sk
 import asyncio
 from ai.kernel_config import KernelConfig
-from utils.validator import Validate
+from utils.validator import Validator
 
     
 async def main():
@@ -20,25 +20,25 @@ async def main():
     context_variables = sk.ContextVariables()
 
     ArgumentType = writeAnEssay['ArgumentType']
-    response = Validate(ArgumentType(sentence))
+    argumentType = Validator.validate(ArgumentType(sentence))
 
 
     Baslik = writeAnEssay['Baslik']
-    baslik = Baslik(sentence)
+    title = Validator.validate(Baslik(sentence))
 
     AltBaslik = writeAnEssay['AltBaslik']
-    altbaslik = AltBaslik(sentence)
+    subtitle = Validator.validate(AltBaslik(sentence))
 
     CitationsNumber = essayControls["CitationsNumber"]
-    nr = CitationsNumber()
+    citationsNumber = CitationsNumber()
 
-    context_variables['input'] = baslik.result
-    context_variables['subtitle'] = altbaslik.result
+    context_variables['input'] = title
+    context_variables['subtitle'] = subtitle
 
     Chapters = writeAnEssay['Chapters']
-    chapters = Chapters(variables=context_variables)
+    chapters = Validator.validate(Chapters(variables=context_variables))
 
-    print(chapters.result)
+    print(chapters)
 
 
     print("end")
