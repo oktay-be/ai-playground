@@ -1,6 +1,7 @@
 # ORCHESTRATION
 from semantic_kernel.connectors.ai.open_ai import (
     AzureChatCompletion,
+    AzureTextCompletion,
     AzureTextEmbedding,
 )
 import semantic_kernel as sk
