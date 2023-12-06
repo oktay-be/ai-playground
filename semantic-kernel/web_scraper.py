@@ -6,7 +6,7 @@ from utils.constants import (
     DOCUMENT_MAP,
     DIR_PATH,
 )
-from utils.fileops import Scraper
+from utils.scraper import Scraper
 
 # TOOLING
 import asyncio 
@@ -29,16 +29,16 @@ async def main():
     memory_collection_name = "resourceEssay"
     print("Adding reference resource to a volatile Semantic Memory.");
 
-    i = 0
-    for chunk in splitted_text:
-        await kernel.memory.save_reference_async(
-            collection=memory_collection_name,
-            # description=value,
-            text=chunk,
-            external_id=i,
-            external_source_name="Web"
-        )
-        i += 1
+    # i = 0
+    # for chunk in splitted_text:
+    #     await kernel.memory.save_reference_async(
+    #         collection=memory_collection_name,
+    #         # description=value,
+    #         text=chunk,
+    #         external_id=i,
+    #         external_source_name="Web"
+    #     )
+    #     i += 1
 
     # memories = await kernel.memory.search_async(memory_collection_name, ask, limit=5, min_relevance_score=0.77)
 

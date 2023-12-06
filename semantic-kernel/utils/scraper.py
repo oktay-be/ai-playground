@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 class Scraper:
     def __init__(self, url):
         self.url = url
-        self.scrap_async(self.url)
+        self.scrap_async()
 
     async def scrap_async(self):
         response = requests.get(self.url)

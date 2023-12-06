@@ -13,4 +13,12 @@ TITLE:{{$input}}
 SUBTITLE:{{$subtitle}}
 +++++
 
-PRINT TITLE AND SUBTITLE IN THE END.
+PROVIDE YOUR ANSWER IN JSON FORMAT:
+[
+    {
+        "chapter": "chapter name",
+        "topics": [
+            "Topic 1", "Topic 2", .... , "Topic n"
+        ]
+    }
+]

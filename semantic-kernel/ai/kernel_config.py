@@ -1,6 +1,7 @@
 # ORCHESTRATION
 from semantic_kernel.connectors.ai.open_ai import (
     AzureChatCompletion,
+    AzureTextCompletion,
     AzureTextEmbedding,
 )
 import semantic_kernel as sk
@@ -17,7 +18,7 @@ from utils.constants import (
     OPENAI_EMBEDDING_MODEL_NAME,
 )
 
-class dttKernel:
+class KernelConfig:
     def __init__(self):
         self.kernel = sk.Kernel()
         self.add_chat_service()
@@ -48,19 +49,18 @@ class dttKernel:
         # Work with volatile memory
         self.kernel.register_memory_store(memory_store=sk.memory.VolatileMemoryStore())
 
-
     def equip_with_builtin_skills(self):
         # Builtin native plugin: To store and retrieve text in memory
         self.kernel.import_skill(sk.core_skills.TextMemorySkill())
         # Load Skills
 
-    def equip_with_semantic_skills(self):
-        writeAnEssay = self.kernel.import_semantic_skill_from_directory(
-            "Skills", "WriteAnEssay"
+    def equip_with_semantic_skills(self) -> sk.SKFunctionBase:
+        return self.kernel.import_semantic_skill_from_directory(
+            "ai/skills", "WriteAnEssay"
         )
 
-    def equip_with_native_skills(self, min_citation, max_citation):
-        essayControls = self.kernel.import_skill(Citations(min_citation,max_citation), skill_name="Citiations")
+    def equip_with_native_skills(self, min_citation, max_citation) -> sk.SKFunctionBase:
+        return self.kernel.import_skill(Citations(min_citation,max_citation), skill_name="Citiations")
 
     def print_ai_services(self):
         print(f"Text completion services: {self.kernel.all_text_completion_services()}")
