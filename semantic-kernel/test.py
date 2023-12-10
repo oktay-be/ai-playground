@@ -13,6 +13,7 @@ async def main():
     writeAnEssay = kernel.equip_with_semantic_skills()
     essayControls = kernel.equip_with_native_skills(7, 11)
 
+
     # Main input
     sentence="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
 
@@ -21,7 +22,6 @@ async def main():
 
     ArgumentType = writeAnEssay['ArgumentType']
     argumentType = Validator.validate(ArgumentType(sentence))
-
 
     Baslik = writeAnEssay['Baslik']
     title = Validator.validate(Baslik(sentence))
@@ -38,8 +38,16 @@ async def main():
     Chapters = writeAnEssay['Chapters']
     chapters = Validator.validate(Chapters(variables=context_variables))
 
+    kernel.kernel.skills.get_function("writeAnEssay","altbaslik")
+
     print(chapters)
 
+    # context_variables = sk.ContextVariables()
+    # # Main input
+    # sentence="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
+    # context_variables['input'] = sentence
+
+    # kernel.kernel.run_async()
 
     print("end")
 

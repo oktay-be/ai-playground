@@ -23,7 +23,6 @@ class KernelConfig:
         self.kernel = sk.Kernel()
         self.add_chat_service()
         self.add_embedding_service()
-        self.equip_with_memory()
         self.print_ai_services()
 
 
