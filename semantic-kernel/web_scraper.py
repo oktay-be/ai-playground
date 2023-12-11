@@ -6,7 +6,7 @@ from utils.constants import (
     DOCUMENT_MAP,
     DIR_PATH,
 )
-from utils.scraper import Scraper
+from utils.common import Scraper
 from ai.kernel_config import KernelConfig
 import semantic_kernel as sk
 # TOOLING
@@ -154,14 +154,14 @@ async def main():
 
     url = "https://blog-idceurope.com/home-office-is-an-advantage-but-security-risks-remain/"
 
-    text = await scraper.scrap_async(url)
+    text = await scraper.scrape_async(url)
 
     
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     splitted_text = text_splitter.split_text(text)
     
     memory_collection_name = "resourceEssay"
-    print("Adding reference resource to a volatile Semantic Memory.");
+    print("Adding reference resource to a volatile Semantic Memory.")
 
     i = 1
     for chunk in splitted_text:

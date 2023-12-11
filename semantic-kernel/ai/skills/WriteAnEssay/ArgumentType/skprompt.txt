@@ -8,7 +8,7 @@ THE FOLLOWING SENTENCE IMPLIES A CLAIM:
 The number of people who work from home has increased dramatically in recent years and this will have terrible consequences for society.
 +++++
 
-WHAT DOES THEN THE FOLLOWING SENTENCE IMPLIES:
+WHAT DOES THEN THE FOLLOWING SENTENCE IMPLY:
 +++++
 {{$input}}
 +++++
