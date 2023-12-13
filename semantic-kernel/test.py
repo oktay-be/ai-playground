@@ -77,9 +77,7 @@ async def main():
         gen_chapter = Validator.validate(Chapter(variables=context_variables))
         print(gen_chapter)
 
-    # context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "aboutMe"
-    # context[sk.core_skills.TextMemorySkill.RELEVANCE_PARAM] = 0.8
-
+        # TODO: Debug if recall worked
 
 
     # context_variables = sk.ContextVariables()

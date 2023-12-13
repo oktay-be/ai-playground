@@ -34,7 +34,7 @@
                 "description": "Chapter.",
                 "defaultValue": "",
                 "required": true
-            },
+            }
         ]
     },
     "default_backends": []
