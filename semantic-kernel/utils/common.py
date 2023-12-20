@@ -36,8 +36,18 @@ class Embedder:
 
 class Scraper:
 
-    async def scrape_async(self, url):
-        response = requests.get(url, verify=False)
+    async def scrape_async(self, url: str) -> str:
+        """
+        Asynchronously scrapes the given URL and returns the text content of the page.
+
+        Parameters:
+        url (str): The URL of the page to scrape.
+
+        Returns:
+        str: The text content of the page if the page was successfully scraped and does not require JavaScript to be parsed. 
+             Returns an empty string if the page could not be scraped or requires JavaScript.
+        """
+        response = requests.get(url, verify=False, timeout=2)
         if response.status_code == 200 and 'text/html' in response.headers['Content-Type']:
             soup = BeautifulSoup(response.text, 'html.parser')
             text = soup.get_text()
