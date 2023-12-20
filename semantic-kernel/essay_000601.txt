@@ -1,0 +1,8 @@
+title
+Introduction
+Pros of Home-Office
+Cons of Home-Office
+Assessing IT Infrastructure
+Implementing IT Infrastructure
+Best Practices for Home-Office
+Conclusion

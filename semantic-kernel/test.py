@@ -1,93 +1,183 @@
-import semantic_kernel as sk
-import asyncio
+# CONSTANTS
+from utils.constants import (
+    OPENAI_DEPLOYMENT_NAME,
+    OPENAI_ENDPOINT,
+    OPENAI_API_KEY,
+    DOCUMENT_MAP,
+    DIR_PATH,
+)
+from utils.common import Scraper
 from ai.kernel_config import KernelConfig
-from utils.validator import Validator
-from utils.common import Chunker, Embedder, Scraper
-import json
-    
-async def main():
+import semantic_kernel as sk
+# TOOLING
+import asyncio 
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.docstore.document import Document
+from typing import Tuple
 
-    kernel_config = KernelConfig()
+from datetime import datetime
 
-    # Equip kernel with skills 
-    kernel_config.equip_with_builtin_skills()
-    kernel_config.equip_with_memory()
-    writeAnEssay = kernel_config.equip_with_semantic_skills()
-    essayControls = kernel_config.equip_with_native_skills(7, 11)
-    kernel = kernel_config.kernel
-
-
-    # Main input
-    sentence="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
-
-    # Reference
-    url = "https://blog-idceurope.com/home-office-is-an-advantage-but-security-risks-remain/"
-
-    scraper = Scraper()
-    chunker = Chunker()
-    embedder = Embedder()
-
-    text = await scraper.scrape_async(url)
-    chunked_text = await chunker.chunk(text, "local")
-    await embedder.embed(chunked_text, kernel)
-
-    # Create Context Variables
-    context_variables = sk.ContextVariables()
-
-    ArgumentType = writeAnEssay['ArgumentType']
-    argumentType = Validator.validate(ArgumentType(sentence))
-
-    Baslik = writeAnEssay['Baslik']
-    title = Validator.validate(Baslik(sentence))
-
-    AltBaslik = writeAnEssay['AltBaslik']
-    subtitle = Validator.validate(AltBaslik(sentence))
-
-    CitationsNumber = essayControls["CitationsNumber"]
-    citationsNumber = CitationsNumber()
-
-    context_variables['input'] = title
-    context_variables['subtitle'] = subtitle
-
-    TableOfContents = writeAnEssay['TableOfContents']
-    tableOfContents = Validator.validate(TableOfContents(variables=context_variables))
+# Will be saved in embeddings
+async def populate_memory(kernel: sk.Kernel) -> None:
+    # Todo: SaveReferenceAsync check
+    # Add some documents to the semantic memory
+    await kernel.memory.save_information_async(
+        "aboutMe", id="info1", text="My name is Andrea"
+    )
+    await kernel.memory.save_information_async(
+        "aboutMe", id="info2", text="I currently work as a tour guide"
+    )
+    await kernel.memory.save_information_async(
+        "aboutMe", id="info3", text="I've been living in Seattle since 2005"
+    )
+    await kernel.memory.save_information_async(
+        "aboutMe", id="info4", text="I visited France and Italy five times since 2015"
+    )
+    await kernel.memory.save_information_async(
+        "aboutMe", id="info5", text="I received my postgraduate degree in 2010"
+    )
+    await kernel.memory.save_information_async(
+        "aboutMe", id="info6", text="I have 3 kids"
+    )
 
 
-    # Open the file
-    with open('chapters_example.json', 'r') as f:
-        # Load the JSON data from the file
-        tableOfContents_deserialized = json.load(f)
+async def search_memory_examples(kernel: sk.Kernel) -> None:
+    questions = [
+        "what's my name",
+        "where do I live?",
+        "where's my family from?",
+        "where have I traveled?",
+        "what do I do for work",
+    ]
 
-    # tableOfContents_deserialized = json.loads(tableOfContents)
+
+    for question in questions:
+        print(f"Question: {question}")
+        result = await kernel.memory.search_async("aboutMe", question)
+        print(f"Answer: {result[0].text}\n")
+        
+async def setup_chat_with_memory(
+    kernel: sk.Kernel,
+) -> Tuple[sk.SKFunctionBase, sk.SKContext]:
+    sk_prompt = """
+    ChatBot can have a conversation with you about any topic.
+    It can give explicit instructions or say 'I don't know' if
+    it does not have an answer.
+
+    Information about me, from previous conversations:
+    +++++
+    - {{$fact1}} {{recall $fact1}}
+    - {{$fact2}} {{recall $fact2}}
+    - {{recall $fact3}}
+    - {{recall $fact4}}
+    +++++
+
+    Chat:
+    *****
+    {{$chat_history}}
+    *****
+    User: {{$user_input}}
+    ChatBot: """.strip()
+
+
+    chat_func = kernel.create_semantic_function(sk_prompt, max_tokens=200, temperature=0.8)
 
     context = kernel.create_new_context()
-    context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "resourceEssay"
+    context["fact1"] = "what is my name?"
+    context["fact2"] = "where do I live?"
+    context["fact3"] = "How many poeple are there in my family?"
+    context["fact4"] = "When did I graduate from college?"
+
+
+    context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "aboutMe"
     context[sk.core_skills.TextMemorySkill.RELEVANCE_PARAM] = 0.8
-    context_variables["relevance"] = 0.7
-    context_variables["collection"] = "resourceEssay"
-    context_variables['input'] = title
-    context_variables['topic'] = sentence
+
+    context["chat_history"] = ""
+
+    return chat_func, context
+
+async def chat(
+    kernel: sk.Kernel, chat_func: sk.SKFunctionBase, context: sk.SKContext
+) -> bool:
+    try:
+        user_input = input("User:> ")
+        context["user_input"] = user_input
+        print(f"User:> {user_input}")
+    except KeyboardInterrupt:
+        print("\n\nExiting chat...")
+        return False
+    except EOFError:
+        print("\n\nExiting chat...")
+        return False
+
+    if user_input == "exit":
+        print("\n\nExiting chat...")
+        return False
+
+    answer = await kernel.run_async(chat_func, input_vars=context.variables)
+    context["chat_history"] += f"\nUser:> {user_input}\nChatBot:> {answer}\n"
+
+    print(f"ChatBot:> {answer}")
+    return True
+
+# TODO: autodetect envoding
+# doc = load_single_document(file_path)
+# create_directory(DIR_PATH)
+# file_path = await write_text(text)
+
+
+async def main():
+
+    kernel_wrapper = KernelConfig()
+    kernel_wrapper.equip_with_builtin_skills()
+    kernel_wrapper.equip_with_memory()
+
+    print("Populating memory...")
+    await populate_memory(kernel_wrapper.kernel)
+
+    print("Asking questions... (manually)")
+    await search_memory_examples(kernel_wrapper.kernel)
+
+    print("Setting up a chat (with memory!)")
+    chat_func, context = await setup_chat_with_memory(kernel_wrapper.kernel)
+
+    # print("Begin chatting (type 'exit' to exit):\n")
+    # chatting = True
+    # while chatting:
+    #     chatting = await chat(kernel_wrapper.kernel, chat_func, context)
+
+
+
+    ###########################################
+
+    scraper = Scraper()
+
+    url = "https://blog-idceurope.com/home-office-is-an-advantage-but-security-risks-remain/"
+
+    text = await scraper.scrape_async(url)
+
     
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+    splitted_text = text_splitter.split_text(text)
+    
+    memory_collection_name = "resourceEssay"
+    print("Adding reference resource to a volatile Semantic Memory.")
 
-    Chapter = writeAnEssay["Chapter"]
-    for chapter in tableOfContents_deserialized:
-        # Format the elements
-        topics = "\n".join(f"- {element}" for element in chapter["topics"])
-        context_variables['chapter'] = topics
-        gen_chapter = Validator.validate(Chapter(variables=context_variables))
-        print(gen_chapter)
+    i = 1
+    for chunk in splitted_text:
+        await kernel_wrapper.kernel.memory.save_information_async(
+            collection=memory_collection_name,
+            text=chunk,
+            id=i,
+        )
+        i += 1
 
-        # TODO: Debug if recall worked
+    ask = "How does remote working effect competitiveness?"
+    memories = await kernel_wrapper.kernel.memory.search_async(memory_collection_name, ask, limit=5, min_relevance_score=0.50)
+
+    print("asa")
 
 
-    # context_variables = sk.ContextVariables()
-    # # Main input
-    # sentence="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
-    # context_variables['input'] = sentence
-
-    # kernel.kernel.run_async()
-
-    print("end")
 
 # Run the main function
 asyncio.run(main())

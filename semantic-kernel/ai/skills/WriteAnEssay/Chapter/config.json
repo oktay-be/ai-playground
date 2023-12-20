@@ -34,6 +34,18 @@
                 "description": "Chapter.",
                 "defaultValue": "",
                 "required": true
+            },
+            {
+                "name": "subtopics",
+                "description": "Subtopics of a chapter",
+                "defaultValue": "",
+                "required": true
+            },
+            {
+                "name": "searched",
+                "description": "searched",
+                "defaultValue": "",
+                "required": true
             }
         ]
     },
