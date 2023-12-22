@@ -14,7 +14,7 @@ async def main():
     kernel_config.equip_with_builtin_skills()
     kernel_config.equip_with_memory()
     writeAnEssay = kernel_config.equip_with_semantic_skills()
-    essayControls = kernel_config.equip_with_native_skills(7, 11)
+    essayControls = kernel_config.equip_with_native_skills()
     kernel = kernel_config.kernel
 
 
