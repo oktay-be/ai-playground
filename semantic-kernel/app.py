@@ -61,9 +61,6 @@ async def main():
 
     # tableOfContents_deserialized = json.loads(tableOfContents)
 
-    context = kernel.create_new_context()
-    context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "resourceEssay"
-    context[sk.core_skills.TextMemorySkill.RELEVANCE_PARAM] = 0.8
     context_variables["relevance"] = 0.7
     context_variables["collection"] = "resourceEssay"
     context_variables['input'] = title
@@ -73,12 +70,9 @@ async def main():
 
     Chapter = writeAnEssay["Chapter"]
     for chapter in tableOfContents_deserialized:
-        # Format the elements
-        subtopics = "\n".join(f"- {element}" for element in chapter["topics"])
         context_variables['chapter'] = chapter['chapter']
-        context_variables['subtopics'] = subtopics
-        gen_chapter = Validator.validate(Chapter(variables=context_variables))
-        rendered_essay_list.append(gen_chapter)
+        gen_chapter2 = Validator.validate(await kernel.run_async(Chapter, input_vars=context_variables))
+        rendered_essay_list.append(gen_chapter2)
 
         # TODO: Debug if recall worked
 
@@ -88,12 +82,22 @@ async def main():
     # Format the date and time as a string
     timestamp = now.strftime("%H%M%S")
     # Append the timestamp to the filename
-    filename = f'essay_{timestamp}.txt'
+    filename = f'essay_original{timestamp}.txt'
 
     rendered_essay = "\n".join(rendered_essay_list)
 
     with open(filename, 'w') as f:
         f.write(rendered_essay)
+
+    context_variables['original_essay'] = rendered_essay
+
+    Calibrate = writeAnEssay['Calibrate']
+    calibrated_essay = Validator.validate(Calibrate(variables=context_variables))
+
+    filename_calibrated = f'essay_calibrated{timestamp}.txt'
+
+    with open(filename_calibrated, 'w') as f:
+        f.write(calibrated_essay)
 
     print("end")
 

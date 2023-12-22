@@ -40,8 +40,8 @@ async def main():
         # Load the JSON data from the file
         tableOfContents_deserialized = json.load(f)
 
-    # context_variables["relevance"] = 0.2
-    # context_variables["collection"] = "resourceEssay"
+    context_variables["relevance"] = 0.7
+    context_variables["collection"] = "resourceEssay"
 
     context = kernel.create_new_context()
     context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "resourceEssay"
@@ -53,12 +53,13 @@ async def main():
     for chapter in tableOfContents_deserialized:
         # context_variables['chapter'] = chapter['chapter']
         searched = await kernel.memory.search_async("resourceEssay", chapter['chapter'], min_relevance_score=0.7)
-        # context_variables['searched'] = searched[0].text
+        context_variables['searched'] = searched[0].text
+        context_variables['chapter'] = chapter['chapter']
         context["searched"] = searched[0].text
         context["chapter"] = chapter['chapter']
         # gen_chapter = Validator.validate(Chapter(variables=context_variables))
         # gen_chapter = Validator.validate(Chapter(variables=context.variables))
-        gen_chapter2 = await kernel.run_async(Chapter, input_vars=context.variables)
+        gen_chapter2 = await kernel.run_async(Chapter, input_vars=context_variables)
         rendered_essay_list.append(gen_chapter2.result)
         # rendered_essay_list.append(gen_chapter)
 
