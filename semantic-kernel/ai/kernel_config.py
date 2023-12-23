@@ -58,9 +58,14 @@ class KernelConfig:
             "ai/skills", "WriteAnEssay"
         )
 
+    # def equip_with_native_skills(self) -> sk.SKFunctionBase:
+    #     return self.kernel.import_skill(Citations(), skill_name="Citiations")
+    
     def equip_with_native_skills(self) -> sk.SKFunctionBase:
-        return self.kernel.import_skill(Citations(), skill_name="Citiations")
-
+        return self.kernel.import_native_skill_from_directory(
+            "ai/skills", "EssayControls"
+        )
+    
     def print_ai_services(self):
         print(f"Text completion services: {self.kernel.all_text_completion_services()}")
         print(f"Chat completion services: {self.kernel.all_chat_services()}")
