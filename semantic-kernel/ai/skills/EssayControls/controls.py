@@ -4,9 +4,6 @@ from semantic_kernel import SKContext
 
 
 class Citations:
-    def __init__(self):
-        self.min = min
-        self.max = max
 
     @sk_function(
         description="Determine the number of citations",

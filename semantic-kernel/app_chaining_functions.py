@@ -17,6 +17,12 @@ async def main():
     essayControls = kernel_config.equip_with_native_skills()
     kernel = kernel_config.kernel
 
+    ArgumentType = writeAnEssay['ArgumentType']
+    Baslik = writeAnEssay['Baslik']
+    AltBaslik = writeAnEssay['AltBaslik']
+    CitationsNumber = essayControls["CitationsNumber"]
+    GenerateTableOfContents = essayControls['GenerateTableOfContents']
+    GenerateChapters = essayControls['GenerateChapters']
 
     # Main input
     sentence="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
@@ -36,71 +42,19 @@ async def main():
     context_variables = sk.ContextVariables()
     context_variables["original_request"] = sentence
     context_variables["input"] = sentence
-
-    ArgumentType = writeAnEssay['ArgumentType']
-    argumentType = Validator.validate(ArgumentType(sentence))
-
-    Baslik = writeAnEssay['Baslik']
-    title = Validator.validate(Baslik(sentence))
-
-    AltBaslik = writeAnEssay['AltBaslik']
-    subtitle = Validator.validate(AltBaslik(sentence))
-
-    CitationsNumber = essayControls["CitationsNumber"]
-    citationsNumber = CitationsNumber()
-
-    context_variables['input'] = title
-    context_variables['subtitle'] = subtitle
-
-    # TableOfContents = writeAnEssay['TableOfContents']
-    # tableOfContents = Validator.validate(TableOfContents(variables=context_variables))
-
-
-    # Open the file
-    with open('chapters_example.json', 'r') as f:
-        # Load the JSON data from the file
-        tableOfContents_deserialized = json.load(f)
-
-    # tableOfContents_deserialized = json.loads(tableOfContents)
-
     context_variables["relevance"] = 0.7
     context_variables["collection"] = "resourceEssay"
-    context_variables['input'] = title
-    context_variables['topic'] = sentence
+
+    await kernel.run_async(
+        ArgumentType,
+        Baslik,
+        AltBaslik,
+        CitationsNumber,
+        GenerateTableOfContents,
+        GenerateChapters,
+        input_vars=context_variables
+        )
     
-    rendered_essay_list = [title]
-
-    Chapter = writeAnEssay["Chapter"]
-    for chapter in tableOfContents_deserialized:
-        context_variables['chapter'] = chapter['chapter']
-        gen_chapter2 = Validator.validate(await kernel.run_async(Chapter, input_vars=context_variables))
-        rendered_essay_list.append(gen_chapter2)
-
-        # TODO: Debug if recall worked
-
-    # Get the current date and time
-    now = datetime.now()
-
-    # Format the date and time as a string
-    timestamp = now.strftime("%H%M%S")
-    # Append the timestamp to the filename
-    filename = f'essay_original{timestamp}.txt'
-
-    rendered_essay = "\n".join(rendered_essay_list)
-
-    with open(filename, 'w') as f:
-        f.write(rendered_essay)
-
-    context_variables['original_essay'] = rendered_essay
-
-    Calibrate = writeAnEssay['Calibrate']
-    calibrated_essay = Validator.validate(Calibrate(variables=context_variables))
-
-    filename_calibrated = f'essay_calibrated{timestamp}.txt'
-
-    with open(filename_calibrated, 'w') as f:
-        f.write(calibrated_essay)
-
     print("end")
 
 # Run the main function
