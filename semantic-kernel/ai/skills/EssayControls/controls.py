@@ -1,9 +1,10 @@
 import random
 from semantic_kernel.skill_definition import sk_function
+from semantic_kernel import SKContext
 
 
 class Citations:
-    def __init__(self, min, max):
+    def __init__(self):
         self.min = min
         self.max = max
 
@@ -12,8 +13,8 @@ class Citations:
         name="CitationsNumber",
         input_description="The value to take the square root of",
     )
-    def generate_random_integer(self) -> str:
-        return str(random.randint(self.min, self.max))
+    def generate_random_integer(self, context: SKContext) -> str:
+        return str(random.randint(context["min"], context["max"]))
 
 # class Style:
 #     self.essay_style = "Academic"
