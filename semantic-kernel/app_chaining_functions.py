@@ -21,8 +21,9 @@ async def main():
     Baslik = writeAnEssay['Baslik']
     AltBaslik = writeAnEssay['AltBaslik']
     CitationsNumber = essayControls["CitationsNumber"]
-    GenerateTableOfContents = essayControls['GenerateTableOfContents']
+    TableOfContents = writeAnEssay['TableOfContents']
     GenerateChapters = essayControls['GenerateChapters']
+    Chapter = writeAnEssay["Chapter"]
 
     # Main input
     sentence="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
@@ -45,12 +46,12 @@ async def main():
     context_variables["relevance"] = 0.7
     context_variables["collection"] = "resourceEssay"
 
-    await kernel.run_async(
+    result = await kernel.run_async(
         ArgumentType,
         Baslik,
         AltBaslik,
-        CitationsNumber,
-        GenerateTableOfContents,
+        # CitationsNumber,
+        TableOfContents,
         GenerateChapters,
         input_vars=context_variables
         )

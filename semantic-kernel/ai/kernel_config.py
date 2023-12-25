@@ -7,7 +7,7 @@ from semantic_kernel.connectors.ai.open_ai import (
 import semantic_kernel as sk
 
 # Native Function
-from ai.skills.EssayControls.controls import Citations
+# from ai.skills.EssayControls.controls import Citations
 
 from typing import Tuple
 import os
@@ -17,6 +17,7 @@ from utils.constants import (
     OPENAI_API_KEY,
     OPENAI_EMBEDDING_MODEL_NAME,
 )
+from ai.skills.WriteAnEssay.Orchestrator import Orchestrator
 
 class KernelConfig:
     def __init__(self):
@@ -59,7 +60,9 @@ class KernelConfig:
         )
 
     def equip_with_native_skills(self) -> sk.SKFunctionBase:
-        return self.kernel.import_skill(Citations(), skill_name="Citiations")
+        return self.kernel.import_skill(
+            Orchestrator(self.kernel), skill_name="WriteAnEssay"
+        )
 
     def print_ai_services(self):
         print(f"Text completion services: {self.kernel.all_text_completion_services()}")

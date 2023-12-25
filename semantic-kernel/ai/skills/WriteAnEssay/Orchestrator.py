@@ -1,9 +1,8 @@
+import random
 import json
-from semantic_kernel import ContextVariables, Kernel
-from semantic_kernel.skill_definition import (
-    sk_function,
-)
-from semantic_kernel.orchestration.sk_context import SKContext
+from semantic_kernel.skill_definition import sk_function
+from semantic_kernel import SKContext, Kernel
+from utils.validator import Validator
 
 
 class Orchestrator:
@@ -11,83 +10,55 @@ class Orchestrator:
         self._kernel = kernel
 
     @sk_function(
-        description="Routes the request to the appropriate function",
-        name="route_request",
+        description="Determine the number of citations",
+        name="CitationsNumber",
+        input_description="The value to take the square root of",
     )
-    async def RouteRequest(self, context: SKContext) -> str:
-        # Save the original user request
-        request = context["input"]
-
-        # Add the list of available functions to the context variables
-        variables = ContextVariables()
-        variables["input"] = request
-        variables["options"] = "Sqrt, Multiply"
-
-        # Retrieve the intent from the user request
-        get_intent = self._kernel.skills.get_function("OrchestratorPlugin", "GetIntent")
-        intent = (
-            await self._kernel.run_async(get_intent, input_vars=variables)
-        ).result.strip()
-
-        # Prepare the functions to be called in the pipeline
-        get_numbers = self._kernel.skills.get_function(
-            "OrchestratorPlugin", "GetNumbers"
-        )
-        extract_numbers_from_json = self._kernel.skills.get_function(
-            "OrchestratorPlugin", "ExtractNumbersFromJson"
-        )
-        create_response = self._kernel.skills.get_function(
-            "OrchestratorPlugin", "CreateResponse"
-        )
-
-        # Retrieve the correct function based on the intent
-        if intent == "Sqrt":
-            math_function = self._kernel.skills.get_function("MathPlugin", "Sqrt")
-        elif intent == "Multiply":
-            math_function = self._kernel.skills.get_function("MathPlugin", "Multiply")
-        else:
-            return "I'm sorry, I don't understand."
-
-        # Run the functions in a pipeline
-        output = await self._kernel.run_async(
-            get_numbers,
-            extract_numbers_from_json,
-            math_function,
-            input_str=request,
-        )
-
-        # Create a new context object with the original request
-        pipelineVariables = ContextVariables()
-        pipelineVariables["original_request"] = request
-        pipelineVariables["input"] = request
-
-        # Run the functions in a pipeline with create_response
-        output = await self._kernel.run_async(
-            get_numbers,
-            extract_numbers_from_json,
-            math_function,
-            create_response,
-            input_vars=pipelineVariables,
-        )
-
-        return output["input"]
+    def generate_random_integer(self, context: SKContext) -> str:
+        return str(random.randint(context["min"], context["max"]))
 
     @sk_function(
-        description="Extracts numbers from JSON",
-        name="ExtractNumbersFromJson",
+        description="Generates generate table of contents",
+        name="GenerateTableOfContents",
+        input_description="Context variables",
     )
-    ## add "-> str" ## 
-    def extract_numbers_from_json(self, context: SKContext) -> str:
-        numbers = json.loads(context["input"])
+    def generate_table_of_contents(self, context: SKContext) -> str:
+        print("inside generate_table_of_contents")
 
-        # Loop through numbers and add them to the context
-        for key, value in numbers.items():
-            if key == "number1":
-                # Add the first number to the input variable
-                context["input"] = str(value)
-            else:
-                # Add the rest of the numbers to the context
-                context[key] = str(value)
+    @sk_function(
+        description="Generates chapters",
+        name="GenerateChapters",
+        input_description="Context variables",
+    )
+    async def generate_chapters(self, context: SKContext) -> str:
+        print("inside generate_chapters")
 
-        ## add ["input"] ##
-        return context["input"]
+        rendered_essay_list = []
+
+        # Validate json here
+        # Record json in cloud for later use
+        Chapter = self._kernel.skills.data["writeanessay"]["chapter"]
+        tableOfContents_deserialized = json.loads(context["input"])
+        for chapter in tableOfContents_deserialized:
+            gen_chapter2 = Validator.validate(await self._kernel.run_async(Chapter, input_vars=context.variables))
+            rendered_essay_list.append(gen_chapter2)
+        return "\n".join(rendered_essay_list)
+
+# class Style:
+#     self.essay_style = "Academic"
+#     @sk_function(
+#         description="Style of the essay",
+#         name="styler",
+#         input_description="The value to take the square root of",
+#     )
+#     def square_root(self) -> str:
+#         return self.essay_style
+# class Style:
+#     self.essay_style = "Academic"
+#     @sk_function(
+#         description="Style of the essay",
+#         name="styler",
+#         input_description="The value to take the square root of",
+#     )
+#     def square_root(self) -> str:
+#         return self.essay_style
