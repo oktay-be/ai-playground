@@ -1,22 +1,37 @@
 import semantic_kernel as sk
 import asyncio
-from ai.kernel_config import KernelConfig
-from utils.validator import Validator
-from utils.common import Chunker, Embedder, Scraper
 import json
 from datetime import datetime
+from semantic_kernel.connectors.ai.open_ai import (
+    AzureChatCompletion,
+    AzureTextCompletion,
+    AzureTextEmbedding,
+)
+import os
+import semantic_kernel as sk
     
 async def main():
+    kernel = sk.Kernel()
 
-    kernel_config = KernelConfig()
+    azure_chat_service = AzureChatCompletion(
+        deployment_name="gpt-35-turbo-16k",
+        endpoint=os.getenv("OPENAI_ENDPOINT"),
+        api_key=os.getenv("OPENAI_API_KEY"),
+    )
 
-    # Equip kernel with skills 
-    kernel_config.equip_with_builtin_skills()
-    kernel_config.equip_with_memory()
-    writeAnEssay = kernel_config.equip_with_semantic_skills()
-    essayControls = kernel_config.equip_with_native_skills()
-    kernel = kernel_config.kernel
+    azure_embedding_service = AzureTextEmbedding(
+        deployment_name="text-embedding-ada-002",
+        endpoint=os.getenv("OPENAI_ENDPOINT"),
+        api_key=os.getenv("OPENAI_API_KEY"),
+    )
 
+    kernel.add_chat_service("azure_chat_completion", azure_chat_service)
+    kernel.add_text_embedding_generation_service("ada", azure_embedding_service)
+    kernel.register_memory_store(memory_store=sk.memory.VolatileMemoryStore())
+    kernel.import_skill(sk.core_skills.TextMemorySkill())
+    kernel.import_semantic_skill_from_directory(
+        "ai/skills", "WriteAnEssay"
+    )
 
     # Main input
     sentence="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."

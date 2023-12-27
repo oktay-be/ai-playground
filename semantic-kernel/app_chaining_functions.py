@@ -1,10 +1,13 @@
 import semantic_kernel as sk
 import asyncio
-from ai.kernel_config import KernelConfig
 from utils.validator import Validator
-from utils.common import Chunker, Embedder, Scraper
+from ai.skills.WriteAnEssay.Orchestrator import Orchestrator
+from ai.kernel_config import KernelConfig
 import json
 from datetime import datetime
+import time
+
+start_time = time.time()
     
 async def main():
 
@@ -17,46 +20,37 @@ async def main():
     essayControls = kernel_config.equip_with_native_skills()
     kernel = kernel_config.kernel
 
-    ArgumentType = writeAnEssay['ArgumentType']
-    Baslik = writeAnEssay['Baslik']
-    AltBaslik = writeAnEssay['AltBaslik']
-    CitationsNumber = essayControls["CitationsNumber"]
-    TableOfContents = writeAnEssay['TableOfContents']
-    GenerateChapters = essayControls['GenerateChapters']
-    Chapter = writeAnEssay["Chapter"]
-
     # Main input
     sentence="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
 
-    # Reference
+    # References
+    # Todo: Support list
     url = "https://blog-idceurope.com/home-office-is-an-advantage-but-security-risks-remain/"
-
-    scraper = Scraper()
-    chunker = Chunker()
-    embedder = Embedder()
-
-    text = await scraper.scrape_async(url)
-    chunked_text = await chunker.chunk(text, "local")
-    await embedder.embed(chunked_text, kernel)
 
     # Create Context Variables
     context_variables = sk.ContextVariables()
-    context_variables["original_request"] = sentence
+    context_variables["original_input"] = sentence
     context_variables["input"] = sentence
     context_variables["relevance"] = 0.7
     context_variables["collection"] = "resourceEssay"
+    context_variables["generated_content_type"] = "article"
 
-    result = await kernel.run_async(
-        ArgumentType,
-        Baslik,
-        AltBaslik,
-        # CitationsNumber,
-        TableOfContents,
-        GenerateChapters,
-        input_vars=context_variables
+    orchestrator = Orchestrator(kernel)
+
+    await orchestrator.add_to_memory(url)
+
+    generated_content = (
+        await kernel.run_async(
+            kernel.skills.data["writeanessay"]["orchestrate_flow"],
+            input_vars=context_variables,
         )
-    
-    print("end")
+    )
+
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"The script executed in {execution_time} seconds.")
+
+    print(generated_content)
 
 # Run the main function
 asyncio.run(main())

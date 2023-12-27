@@ -13,15 +13,8 @@
         "parameters": [
             {
                 "name": "input",
-                "description": "Title.",
-                "defaultValue": "",
-                "required": true
-            },
-            {
-                "name": "subtitle",
-                "description": "Subtitle",
-                "defaultValue": "",
-                "required": true
+                "description": "The argument to generate an essay title for.",
+                "defaultValue": ""
             }
         ]
     },

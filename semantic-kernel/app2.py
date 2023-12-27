@@ -50,16 +50,10 @@ async def main():
     context_variables['input'] = title
     context_variables['subtitle'] = subtitle
 
-    # TableOfContents = writeAnEssay['TableOfContents']
-    # tableOfContents = Validator.validate(TableOfContents(variables=context_variables))
+    TableOfContents = writeAnEssay['TableOfContents']
+    tableOfContents = Validator.validate(TableOfContents(variables=context_variables))
 
-
-    # Open the file
-    with open('chapters_example.json', 'r') as f:
-        # Load the JSON data from the file
-        tableOfContents_deserialized = json.load(f)
-
-    # tableOfContents_deserialized = json.loads(tableOfContents)
+    tableOfContents_deserialized = json.loads(tableOfContents)
 
     context_variables["relevance"] = 0.7
     context_variables["collection"] = "resourceEssay"

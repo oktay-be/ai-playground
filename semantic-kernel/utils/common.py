@@ -18,10 +18,10 @@ class Chunker:
         
 class Embedder:
 
-    async def embed(self, splitted_text: List[str], kernel: Kernel):
+    async def embed(self, splitted_text: List[str], kernel: Kernel, collectionName=None):
 
         # TODO: Check if memory skill lodaded, exit if not
-        memory_collection_name = "resourceEssay"
+        memory_collection_name = collectionName
         print("Adding reference resource to a volatile Semantic Memory.")
 
         i = 1
@@ -47,15 +47,26 @@ class Scraper:
         str: The text content of the page if the page was successfully scraped and does not require JavaScript to be parsed. 
              Returns an empty string if the page could not be scraped or requires JavaScript.
         """
-        response = requests.get(url, verify=False, timeout=2)
-        if response.status_code == 200 and 'text/html' in response.headers['Content-Type']:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            text = soup.get_text()
-            if 'You need to enable JavaScript to run this app.' in text:
-                print(f"Unable to parse page {url} due to JavaScript being required")
-                return ''
-            return text
-        else:
-            return ''
-        
+        import time
+
+        max_attempts = 5
+        for attempt in range(max_attempts):
+            try:
+                response = requests.get(url, verify=False, timeout=2)
+                if response.status_code == 200 and 'text/html' in response.headers['Content-Type']:
+                    soup = BeautifulSoup(response.text, 'html.parser')
+                    text = soup.get_text()
+                    if 'You need to enable JavaScript to run this app.' in text:
+                        print(f"Unable to parse page {url} due to JavaScript being required")
+                        return ''
+                    return text
+                else:
+                    return ''
+            except requests.exceptions.RequestException as e:
+                print(f"Request failed with error {e}. Attempt {attempt+1} of {max_attempts}.")
+                time.sleep(1)  # Wait for 1 second before the next attempt
+
+        # If the code reaches this point, all attempts have failed
+        raise Exception(f"Failed to retrieve the page after {max_attempts} attempts.")
+
     

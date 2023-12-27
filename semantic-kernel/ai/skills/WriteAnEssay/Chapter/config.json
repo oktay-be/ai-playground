@@ -12,40 +12,9 @@
     "input": {
         "parameters": [
             {
-                "name": "topic",
-                "description": "topic.",
-                "defaultValue": "",
-                "required": true
-            },
-            {
-                "name": "title",
-                "description": "Title.",
-                "defaultValue": "",
-                "required": true
-            },
-            {
-                "name": "subtitle",
-                "description": "Subtitle",
-                "defaultValue": "",
-                "required": true
-            },
-            {
-                "name": "chapter",
-                "description": "Chapter.",
-                "defaultValue": "",
-                "required": true
-            },
-            {
-                "name": "subtopics",
-                "description": "Subtopics of a chapter",
-                "defaultValue": "",
-                "required": true
-            },
-            {
-                "name": "searched",
-                "description": "searched",
-                "defaultValue": "",
-                "required": true
+                "name": "input",
+                "description": "The argument to generate an essay title for.",
+                "defaultValue": ""
             }
         ]
     },

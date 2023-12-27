@@ -1,9 +1,0 @@
-+++++
-CONTEXT:
-ch: {{$chapter}} rc: {{recall  $chapter}} sd: {{$searched}}
-+++++
-
-AS RESPONSE, GIVE THE PROMPT YOU RECEIVED IN FOLLOWING FORMAT WITHOUT CHANGING IT. I NEED TO USE IT FOR DEBUGGING PURPOSES:
-+++++
-CONTEXT:
-+++++
