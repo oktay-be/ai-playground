@@ -37,7 +37,7 @@ async def main():
 
     orchestrator = Orchestrator(kernel)
 
-    await orchestrator.add_to_memory(url)
+    await orchestrator.add_to_memory(url, "resourceEssay")
 
     generated_content = (
         await kernel.run_async(
@@ -50,7 +50,7 @@ async def main():
     execution_time = end_time - start_time
     print(f"The script executed in {execution_time} seconds.")
 
-    print(generated_content)
+    print(generated_content["calibrated_content"])
 
 # Run the main function
 asyncio.run(main())

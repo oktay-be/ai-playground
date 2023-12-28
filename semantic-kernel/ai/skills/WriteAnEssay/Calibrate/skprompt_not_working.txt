@@ -1,7 +1,7 @@
 REWRITE THE FOLLOWING ESSAY:
 
 +++++
-ORIGINAL ESSAY: {{$original_article}}
+ORIGINAL ESSAY: {{$original_content}}
 +++++
 
 REWRITEN THE ARTICLE MUST OBEY FOLLOWING RULES:

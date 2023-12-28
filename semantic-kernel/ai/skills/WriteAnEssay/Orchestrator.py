@@ -38,7 +38,7 @@ class Orchestrator:
 
         return result
     
-    async def add_to_memory(self, url: str) -> None:
+    async def add_to_memory(self, url: str, collectionName=None) -> None:
 
         scraper = Scraper()
         chunker = Chunker()
@@ -46,7 +46,7 @@ class Orchestrator:
 
         text = await scraper.scrape_async(url)
         chunked_text = await chunker.chunk(text, "local")
-        await embedder.embed(chunked_text, self._kernel)
+        await embedder.embed(chunked_text, self._kernel, collectionName)
 
     @sk_function(
         description="Determine the number of citations",
@@ -138,12 +138,12 @@ class Orchestrator:
             context["chapter"] = chapter["chapter"]
             gen_chapter2 = Validator.validate(await self._kernel.run_async(Chapter, input_vars=context.variables))
             rendered_essay_list.append(gen_chapter2)
-        context["original_article"] = "\n".join(rendered_essay_list)
+        context["original_content"] = "\n".join(rendered_essay_list)
 
         # Open the file in write mode
         with open(filename, 'w') as file:
             # Write the essay to the file
-            file.write(context["original_article"])
+            file.write(context["original_content"])
         return "bas"
 
 ################### CALIBRATE #######################
@@ -165,10 +165,10 @@ class Orchestrator:
 
         CalibrateContent = self._kernel.skills.get_function("writeanessay","calibrate")
         calibratedContent = Validator.validate(CalibrateContent(variables=context.variables))
-        context["calibrated_article"] = '\n'.join([context["baslik"], calibratedContent])
+        context["calibrated_content"] = '\n'.join([context["baslik"], calibratedContent])
         
         # Open the file in write mode
         with open(filename_calibrated, 'w') as file:
             # Write the essay to the file
-            file.write(context["calibrated_article"])
+            file.write(context["calibrated_content"])
         return "bas"

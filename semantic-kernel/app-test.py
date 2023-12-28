@@ -9,7 +9,10 @@ from semantic_kernel.connectors.ai.open_ai import (
 )
 import os
 import semantic_kernel as sk
-    
+import requests
+from bs4 import BeautifulSoup  
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 async def main():
     kernel = sk.Kernel()
 
@@ -29,7 +32,7 @@ async def main():
     kernel.add_text_embedding_generation_service("ada", azure_embedding_service)
     kernel.register_memory_store(memory_store=sk.memory.VolatileMemoryStore())
     kernel.import_skill(sk.core_skills.TextMemorySkill())
-    kernel.import_semantic_skill_from_directory(
+    writeAnEssay = kernel.import_semantic_skill_from_directory(
         "ai/skills", "WriteAnEssay"
     )
 
@@ -39,21 +42,46 @@ async def main():
     # Reference
     url = "https://blog-idceurope.com/home-office-is-an-advantage-but-security-risks-remain/"
 
-    scraper = Scraper()
-    chunker = Chunker()
-    embedder = Embedder()
+    response = requests.get(url, verify=False, timeout=2)
+    if response.status_code == 200 and 'text/html' in response.headers['Content-Type']:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        text = soup.get_text()
 
-    text = await scraper.scrape_async(url)
-    chunked_text = await chunker.chunk(text, "local")
-    await embedder.embed(chunked_text, kernel)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+    splitted_text = text_splitter.split_text(text)
+
+    memory_collection_name = "resourceEssay"
+
+    print("Adding reference resource to a volatile Semantic Memory.")
+
+    i = 1
+    for chunk in splitted_text:
+        await kernel.memory.save_information_async(
+            collection=memory_collection_name,
+            text=chunk,
+            id=i,
+        )
+        i += 1
 
     # Create Context Variables
     context_variables = sk.ContextVariables()
 
-    # Open the file
-    with open('chapters_example.json', 'r') as f:
-        # Load the JSON data from the file
-        tableOfContents_deserialized = json.load(f)
+    ArgumentType = writeAnEssay['ArgumentType']
+    argumentType = ArgumentType(sentence)
+
+    Baslik = writeAnEssay['Baslik']
+    title = Baslik(sentence)
+
+    AltBaslik = writeAnEssay['AltBaslik']
+    subtitle = AltBaslik(sentence)
+
+    context_variables['input'] = title
+    context_variables['subtitle'] = subtitle
+
+    TableOfContents = writeAnEssay['TableOfContents']
+    tableOfContents = TableOfContents(variables=context_variables)
+
+    tableOfContents_deserialized = json.loads(tableOfContents)
 
     context_variables["relevance"] = 0.7
     context_variables["collection"] = "resourceEssay"
@@ -61,11 +89,13 @@ async def main():
     context = kernel.create_new_context()
     context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "resourceEssay"
     context[sk.core_skills.TextMemorySkill.RELEVANCE_PARAM] = 0.7
-
+   
     rendered_essay_list = ["title"]
 
+    table_of_contents_deserialized = json.loads(tableOfContents)
+
     Chapter = writeAnEssay["Chapter"]
-    for chapter in tableOfContents_deserialized:
+    for chapter in table_of_contents_deserialized:
         # context_variables['chapter'] = chapter['chapter']
         searched = await kernel.memory.search_async("resourceEssay", chapter['chapter'], min_relevance_score=0.7)
         context_variables['searched'] = searched[0].text

@@ -19,5 +19,5 @@ The rewritten article should maintain the original meaning and content. Avoid us
 
 
 
-Original Essay:
-{{$original_article}}
+Original {{$generated_content_type}}:
+{{$original_content}}
