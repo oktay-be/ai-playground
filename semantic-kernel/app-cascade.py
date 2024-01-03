@@ -8,6 +8,7 @@ from semantic_kernel.connectors.ai.open_ai import (
     AzureTextEmbedding,
 )
 import os
+from semantic_kernel.kernel.SKF
 import semantic_kernel as sk
 import requests
 from bs4 import BeautifulSoup  
@@ -77,16 +78,21 @@ async def main():
     context_variables = sk.ContextVariables()
 
     TopicType = generateContent['TopicType']
-    TopicType = TopicType(topic)
+    topic_type = TopicType(topic)
+    
+    context_variables['topic_type'] = topic_type.result
+
+    context_variables['input'] = topic
 
     Title = generateContent['Title']
-    title = Title(topic)
-
-    AltBaslik = generateContent['AltBaslik']
-    subtitle = AltBaslik(topic)
+    title = Title(variables=context_variables)
+    # title = Title(topic)
+    
+    SubTitle = generateContent['SubTitle']
+    sub_title = SubTitle(topic)
 
     context_variables['input'] = title
-    context_variables['subtitle'] = subtitle
+    context_variables['sub_title'] = sub_title
 
     TableOfContents = generateContent['TableOfContents']
     tableOfContents = TableOfContents(variables=context_variables)
