@@ -1,4 +1,4 @@
-GENERATE EXACTLY ONE BLOG SUB TITLE FOR THE {{WriteAnEssay.ArgumentType $input}} BELOW:
+GENERATE EXACTLY ONE BLOG SUB TITLE FOR THE {{generateContent.TopicType $input}} BELOW:
 
 TITLE MUST BE:
 - CLEAR AND CONCISE
@@ -8,5 +8,5 @@ TITLE MUST BE:
 
 GENERATE THE SUB TITLE FOR TITLE: 
 +++++
-{{WriteAnEssay.Baslik $input}}
+{{generateContent.Baslik $input}}
 +++++

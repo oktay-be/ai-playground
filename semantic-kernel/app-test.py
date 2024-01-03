@@ -1,44 +1,97 @@
 import semantic_kernel as sk
 import asyncio
-from ai.kernel_config import KernelConfig
-from utils.validator import Validator
-from utils.common import Chunker, Embedder, Scraper
 import json
 from datetime import datetime
-    
+from semantic_kernel.connectors.ai.open_ai import (
+    AzureChatCompletion,
+    AzureTextCompletion,
+    AzureTextEmbedding,
+)
+import os
+import semantic_kernel as sk
+import requests
+from bs4 import BeautifulSoup  
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+# from semantic_kernel.connectors.memory.milvus import MilvusMemoryStore
+
 async def main():
+    kernel = sk.Kernel()
 
-    kernel_config = KernelConfig()
+    azure_chat_service = AzureChatCompletion(
+        deployment_name="gpt-35-turbo-16k",
+        endpoint=os.getenv("OPENAI_ENDPOINT"),
+        api_key=os.getenv("OPENAI_API_KEY"),
+    )
 
-    # Equip kernel with skills 
-    kernel_config.equip_with_builtin_skills()
-    kernel_config.equip_with_memory()
-    writeAnEssay = kernel_config.equip_with_semantic_skills()
-    essayControls = kernel_config.equip_with_native_skills(7, 11)
-    kernel = kernel_config.kernel
+    azure_embedding_service = AzureTextEmbedding(
+        deployment_name="text-embedding-ada-002",
+        endpoint=os.getenv("OPENAI_ENDPOINT"),
+        api_key=os.getenv("OPENAI_API_KEY"),
+    )
 
+    kernel.add_chat_service("azure_chat_completion", azure_chat_service)
+    kernel.add_text_embedding_generation_service("ada", azure_embedding_service)
+    
+    # kernel.register_memory_store(memory_store=sk.memory.VolatileMemoryStore())
+    # kernel.import_skill(sk.core_skills.TextMemorySkill())
+
+    # kernel.register_memory_store(memory_store=MilvusMemoryStore()) 
+    
+    generateContent = kernel.import_semantic_skill_from_directory(
+        "ai/skills", "generateContent"
+    )
 
     # Main input
-    sentence="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
+    topic="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
 
-    # Reference
-    url = "https://blog-idceurope.com/home-office-is-an-advantage-but-security-risks-remain/"
+    # # Reference
+    # url = "https://blog-idceurope.com/home-office-is-an-advantage-but-security-risks-remain/"
 
-    scraper = Scraper()
-    chunker = Chunker()
-    embedder = Embedder()
+    # response = requests.get(url, verify=False, timeout=2)
+    # if response.status_code == 200 and 'text/html' in response.headers['Content-Type']:
+    #     soup = BeautifulSoup(response.text, 'html.parser')
+    #     text = soup.get_text()
 
-    text = await scraper.scrape_async(url)
-    chunked_text = await chunker.chunk(text, "local")
-    await embedder.embed(chunked_text, kernel)
+    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+    # splitted_text = text_splitter.split_text(text)
 
+    # memory_collection_name = "resourceEssay"
+
+    # print("Adding reference resource to a volatile Semantic Memory.")
+
+    # i = 1
+    # for chunk in splitted_text:
+    #     await kernel.memory.save_information_async(
+    #         collection=memory_collection_name,
+    #         text=chunk,
+    #         id=i,
+    #     )
+    #     i += 1
+
+    # ask = "How does remote working effect competitiveness?"
+    # memories = await kernel.memory.search_async(memory_collection_name, ask, limit=5, min_relevance_score=0.50)
+
+################# APP #######################
     # Create Context Variables
     context_variables = sk.ContextVariables()
 
-    # Open the file
-    with open('chapters_example.json', 'r') as f:
-        # Load the JSON data from the file
-        tableOfContents_deserialized = json.load(f)
+    TopicType = generateContent['TopicType']
+    TopicType = TopicType(topic)
+
+    Title = generateContent['Title']
+    title = Title(topic)
+
+    AltBaslik = generateContent['AltBaslik']
+    subtitle = AltBaslik(topic)
+
+    context_variables['input'] = title
+    context_variables['subtitle'] = subtitle
+
+    TableOfContents = generateContent['TableOfContents']
+    tableOfContents = TableOfContents(variables=context_variables)
+
+    tableOfContents_deserialized = json.loads(tableOfContents)
 
     context_variables["relevance"] = 0.7
     context_variables["collection"] = "resourceEssay"
@@ -46,11 +99,13 @@ async def main():
     context = kernel.create_new_context()
     context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "resourceEssay"
     context[sk.core_skills.TextMemorySkill.RELEVANCE_PARAM] = 0.7
-
+   
     rendered_essay_list = ["title"]
 
-    Chapter = writeAnEssay["Chapter"]
-    for chapter in tableOfContents_deserialized:
+    table_of_contents_deserialized = json.loads(tableOfContents)
+
+    Chapter = generateContent["Chapter"]
+    for chapter in table_of_contents_deserialized:
         # context_variables['chapter'] = chapter['chapter']
         searched = await kernel.memory.search_async("resourceEssay", chapter['chapter'], min_relevance_score=0.7)
         context_variables['searched'] = searched[0].text

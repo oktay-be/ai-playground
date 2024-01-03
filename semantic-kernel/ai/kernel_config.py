@@ -55,7 +55,7 @@ class KernelConfig:
 
     def equip_with_semantic_skills(self) -> sk.SKFunctionBase:
         return self.kernel.import_semantic_skill_from_directory(
-            "ai/skills", "WriteAnEssay"
+            "ai/skills", "generateContent"
         )
 
     # def equip_with_native_skills(self) -> sk.SKFunctionBase:

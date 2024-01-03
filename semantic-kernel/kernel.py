@@ -10,7 +10,7 @@ async def main():
 
     # Equip kernel with skills 
     kernel.equip_with_builtin_skills()
-    writeAnEssay = kernel.equip_with_semantic_skills()
+    generateContent = kernel.equip_with_semantic_skills()
     essayControls = kernel.equip_with_native_skills(7, 11)
 
     # Main input
@@ -19,13 +19,13 @@ async def main():
     # Create Context Variables
     # context_variables = sk.ContextVariables()
 
-    # ArgumentType = writeAnEssay['ArgumentType']
-    # argumentType = Validator.validate(ArgumentType(sentence))
+    # TopicType = generateContent['TopicType']
+    # TopicType = Validator.validate(TopicType(sentence))
 
-    # Baslik = writeAnEssay['Baslik']
+    # Baslik = generateContent['Baslik']
     # title = Validator.validate(Baslik(sentence))
 
-    # AltBaslik = writeAnEssay['AltBaslik']
+    # AltBaslik = generateContent['AltBaslik']
     # subtitle = Validator.validate(AltBaslik(sentence))
 
     # CitationsNumber = essayControls["CitationsNumber"]
@@ -34,7 +34,7 @@ async def main():
     # context_variables['input'] = title
     # context_variables['subtitle'] = subtitle
 
-    # Chapters = writeAnEssay['Chapters']
+    # Chapters = generateContent['Chapters']
     # chapters = Validator.validate(Chapters(variables=context_variables))
 
     # print(chapters)

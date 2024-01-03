@@ -13,7 +13,7 @@ async def main():
     # Equip kernel with skills 
     kernel_config.equip_with_builtin_skills()
     kernel_config.equip_with_memory()
-    writeAnEssay = kernel_config.equip_with_semantic_skills()
+    generateContent = kernel_config.equip_with_semantic_skills()
     essayControls = kernel_config.equip_with_native_skills()
     kernel = kernel_config.kernel
 
@@ -37,13 +37,13 @@ async def main():
     context_variables["original_request"] = sentence
     context_variables["input"] = sentence
 
-    ArgumentType = writeAnEssay['ArgumentType']
-    argumentType = Validator.validate(ArgumentType(sentence))
+    TopicType = generateContent['TopicType']
+    TopicType = Validator.validate(TopicType(sentence))
 
-    Baslik = writeAnEssay['Baslik']
+    Baslik = generateContent['Baslik']
     title = Validator.validate(Baslik(sentence))
 
-    AltBaslik = writeAnEssay['AltBaslik']
+    AltBaslik = generateContent['AltBaslik']
     subtitle = Validator.validate(AltBaslik(sentence))
 
     CitationsNumber = essayControls["CitationsNumber"]
@@ -52,7 +52,7 @@ async def main():
     context_variables['input'] = title
     context_variables['subtitle'] = subtitle
 
-    # TableOfContents = writeAnEssay['TableOfContents']
+    # TableOfContents = generateContent['TableOfContents']
     # tableOfContents = Validator.validate(TableOfContents(variables=context_variables))
 
 
@@ -70,7 +70,7 @@ async def main():
     
     rendered_essay_list = [title]
 
-    Chapter = writeAnEssay["Chapter"]
+    Chapter = generateContent["Chapter"]
     for chapter in tableOfContents_deserialized:
         context_variables['chapter'] = chapter['chapter']
         gen_chapter2 = Validator.validate(await kernel.run_async(Chapter, input_vars=context_variables))
@@ -93,7 +93,7 @@ async def main():
 
     context_variables['original_essay'] = rendered_essay
 
-    Calibrate = writeAnEssay['Calibrate']
+    Calibrate = generateContent['Calibrate']
     calibrated_essay = Validator.validate(Calibrate(variables=context_variables))
 
     filename_calibrated = f'essay_calibrated{timestamp}.txt'

@@ -1,0 +1,29 @@
+{
+    "schema": 1,
+    "type": "completion",
+    "description": "This semantic function creates the chapters from a given table of contents",
+    "completion": {
+        "max_tokens": 1024,
+        "temperature": 0,
+        "top_p": 0,
+        "presence_penalty": 0,
+        "frequency_penalty": 0
+    },
+    "input": {
+        "parameters": [
+            {
+                "name": "input",
+                "description": "Title.",
+                "defaultValue": "",
+                "required": true
+            },
+            {
+                "name": "subtitle",
+                "description": "Subtitle",
+                "defaultValue": "",
+                "required": true
+            }
+        ]
+    },
+    "default_backends": []
+}
