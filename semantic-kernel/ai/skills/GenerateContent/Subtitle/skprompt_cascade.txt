@@ -1,4 +1,4 @@
-GENERATE EXACTLY ONE ARTICLE SUBTITLE FOR THE {{generateContent.TopicType $input}} BELOW:
+GENERATE EXACTLY ONE ARTICLE SUBTITLE FOR THE {{$topic_type}} BELOW:
 
 TITLE MUST BE:
 - CLEAR AND CONCISE
@@ -8,5 +8,5 @@ TITLE MUST BE:
 
 GENERATE THE SUBTITLE FOR TITLE: 
 +++++
-{{generateContent.Title $input}}
+{{$title}}
 +++++

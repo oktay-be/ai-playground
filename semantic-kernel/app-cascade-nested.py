@@ -12,6 +12,8 @@ import semantic_kernel as sk
 import requests
 from bs4 import BeautifulSoup  
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+import time
+
 
 # from semantic_kernel.connectors.memory.milvus import MilvusMemoryStore
 
@@ -44,63 +46,46 @@ async def main():
 
 ################# APP #######################
     # Create Context Variables
-    context_variables = sk.ContextVariables()
-    context_variables['topic'] = topic
-
-    context = kernel.create_new_context()
     
-    TopicType = kernel.skills.data["generatecontent"]["topictype"]
-    TopicType = kernel.skills.get_function("generatecontent", "topictype")
-    TopicType = generateContent['TopicType']
+    # SubTitle = generateContent['Subtitle']
+    # sub_title = SubTitle(topic)
+    start_time = time.time()
 
-    TopicType = generateContent['TopicType']
-    topic_type = TopicType(topic)
-    
-    context_variables['topic_type'] = topic_type.result
-    context_variables['input'] = topic
-
-    context["topic_type"] = topic_type.result
-    context["input"] = topic
-
-    Title = generateContent['Title']
-    title = Title(variables=context_variables)
-    title = Title(context=context)
-    context_variables['title'] = title.result
-    # title = Title(topic)
-    
-    SubTitle = generateContent['Subtitle']
-    sub_title = SubTitle(topic)
-
-    context_variables['sub_title'] = sub_title.result
 
     TableOfContents = generateContent['TableOfContents']
-    tableOfContents = TableOfContents(variables=context_variables)
+    tableOfContents = TableOfContents(topic)
+
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"The script executed in {execution_time} seconds.")
 
 
-    rendered_article_list = [context_variables['title']]
-
-    table_of_contents_deserialized = json.loads(tableOfContents.result)
-
-    Chapter = generateContent["Chapter"]
-    for chapter in table_of_contents_deserialized:
-        context_variables['chapter'] = chapter['chapter']
-        context_variables["sub_topics"] = "\n".join(f"- {element}" for element in chapter["topics"])
-        generated_chapter = Chapter(variables=context_variables)
-        rendered_article_list.append(generated_chapter.result)
 
 
-    # Get the current date and time
-    now = datetime.now()
+    # rendered_article_list = [context_variables['title']]
 
-    # Format the date and time as a string
-    timestamp = now.strftime("%H%M%S")
-    # Append the timestamp to the filename
-    filename = f'essay_debug_{timestamp}.txt'
+    # table_of_contents_deserialized = json.loads(tableOfContents.result)
 
-    rendered_essay = "\n".join(rendered_article_list)
+    # Chapter = generateContent["Chapter"]
+    # for chapter in table_of_contents_deserialized:
+    #     context_variables['chapter'] = chapter['chapter']
+    #     context_variables["sub_topics"] = "\n".join(f"- {element}" for element in chapter["topics"])
+    #     generated_chapter = Chapter(variables=context_variables)
+    #     rendered_article_list.append(generated_chapter.result)
 
-    with open(filename, 'w') as f:
-        f.write(rendered_essay)
+
+    # # Get the current date and time
+    # now = datetime.now()
+
+    # # Format the date and time as a string
+    # timestamp = now.strftime("%H%M%S")
+    # # Append the timestamp to the filename
+    # filename = f'essay_debug_{timestamp}.txt'
+
+    # rendered_essay = "\n".join(rendered_article_list)
+
+    # with open(filename, 'w') as f:
+    #     f.write(rendered_essay)
 
     print("end")
 

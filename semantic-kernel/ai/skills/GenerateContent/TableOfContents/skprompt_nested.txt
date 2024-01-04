@@ -8,8 +8,8 @@ THE TABLE OF CONTENT MUST BE:
 
 GENERATE THE TABLE OF CONTENT FOR BLOG WITH TITLE AND SUBTITLE:
 +++++
-TITLE: {{generateContent.Title $input}}
-SUBTITLE: {{generateContent.Subtitle $input}}
+TITLE: {{$input}}
+SUBTITLE: {{$sub_title}}
 +++++
 
 PROVIDE YOUR ANSWER IN JSON FORMAT:

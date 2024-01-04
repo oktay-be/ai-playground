@@ -12,6 +12,7 @@ import semantic_kernel as sk
 import requests
 from bs4 import BeautifulSoup  
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+import time
 
 # from semantic_kernel.connectors.memory.milvus import MilvusMemoryStore
 
@@ -44,6 +45,7 @@ async def main():
 
 ################# APP #######################
     # Create Context Variables
+    start_time = time.time()
     context_variables = sk.ContextVariables()
     context_variables['topic'] = topic
 
@@ -75,6 +77,10 @@ async def main():
 
     TableOfContents = generateContent['TableOfContents']
     tableOfContents = TableOfContents(variables=context_variables)
+
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"The script executed in {execution_time} seconds.")
 
 
     rendered_article_list = [context_variables['title']]

@@ -33,8 +33,8 @@ async def main():
     kernel.add_chat_service("azure_chat_completion", azure_chat_service)
     kernel.add_text_embedding_generation_service("ada", azure_embedding_service)
     
-    # kernel.register_memory_store(memory_store=sk.memory.VolatileMemoryStore())
-    # kernel.import_skill(sk.core_skills.TextMemorySkill())
+    kernel.register_memory_store(memory_store=sk.memory.VolatileMemoryStore())
+    kernel.import_skill(sk.core_skills.TextMemorySkill())
 
     # kernel.register_memory_store(memory_store=MilvusMemoryStore()) 
     
@@ -45,32 +45,32 @@ async def main():
     # Main input
     topic="Many employees demand to spend more of their working hours in home-office. Discuss chances and risks with respect to the required IT-infrastructure."
 
-    # # Reference
-    # url = "https://blog-idceurope.com/home-office-is-an-advantage-but-security-risks-remain/"
+    # Reference
+    url = "https://blog-idceurope.com/home-office-is-an-advantage-but-security-risks-remain/"
 
-    # response = requests.get(url, verify=False, timeout=2)
-    # if response.status_code == 200 and 'text/html' in response.headers['Content-Type']:
-    #     soup = BeautifulSoup(response.text, 'html.parser')
-    #     text = soup.get_text()
+    response = requests.get(url, verify=False, timeout=2)
+    if response.status_code == 200 and 'text/html' in response.headers['Content-Type']:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        text = soup.get_text()
 
-    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
-    # splitted_text = text_splitter.split_text(text)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+    splitted_text = text_splitter.split_text(text)
 
-    # memory_collection_name = "resourceEssay"
+    memory_collection_name = "resourceEssay"
 
-    # print("Adding reference resource to a volatile Semantic Memory.")
+    print("Adding reference resource to a volatile Semantic Memory.")
 
-    # i = 1
-    # for chunk in splitted_text:
-    #     await kernel.memory.save_information_async(
-    #         collection=memory_collection_name,
-    #         text=chunk,
-    #         id=i,
-    #     )
-    #     i += 1
+    i = 1
+    for chunk in splitted_text:
+        await kernel.memory.save_information_async(
+            collection=memory_collection_name,
+            text=chunk,
+            id=i,
+        )
+        i += 1
 
-    # ask = "How does remote working effect competitiveness?"
-    # memories = await kernel.memory.search_async(memory_collection_name, ask, limit=5, min_relevance_score=0.50)
+    ask = "How does remote working effect competitiveness?"
+    memories = await kernel.memory.search_async(memory_collection_name, ask, limit=5, min_relevance_score=0.50)
 
 ################# APP #######################
     # Create Context Variables
