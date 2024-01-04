@@ -3,8 +3,6 @@ FOR THE ESSAY BASED ON THE INFORMATION BELOW:
 TOPIC:{{$topic}}
 TITLE:{{$title}}
 SUBTITLE:{{$sub_title}}
-CONTEXT:
-{{Recall  $chapter}}
 +++++
 
 THE NARRATIVE CONTENT MUST
