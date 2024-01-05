@@ -12,9 +12,10 @@
     "input": {
         "parameters": [
             {
-                "name": "input",
-                "description": "The argument to generate an essay title for.",
-                "defaultValue": ""
+                "name": "original_essay",
+                "description": "Original Essay.",
+                "defaultValue": "",
+                "required": true
             }
         ]
     },
