@@ -1,0 +1,18 @@
+THE FOLLOWING SENTENCE IMPLIES A FACT:
++++++
+Many employees demand to spend more of their working hours in home-office
++++++
+
+THE FOLLOWING SENTENCE IMPLIES A CLAIM:
++++++
+The number of people who work from home has increased dramatically in recent years and this will have terrible consequences for society.
++++++
+
+WHAT DOES THEN THE FOLLOWING SENTENCE IMPLY:
++++++
+{{$input}}
++++++
+
+YOUR RESPONSE MUST BE:
+- 1 OR 2 WORDS
+- STRAIGHTFORWARD AND EASY TO UNDERSTAND
