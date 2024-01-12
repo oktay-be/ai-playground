@@ -1,0 +1,27 @@
+{
+    "schema": 1,
+    "type": "completion",
+    "description": "a function that generates the title for the content",
+    "completion": {
+        "max_tokens": 500,
+        "temperature": 0,
+        "top_p": 0,
+        "presence_penalty": 0,
+        "frequency_penalty": 0
+    },
+    "input": {
+        "parameters": [
+            {
+                "name": "input",
+                "description": "The topic to generate an essay title for",
+                "defaultValue": ""
+            },
+            {
+                "name": "topic_type",
+                "description": "The topic type to be used during generation",
+                "defaultValue": ""
+            }            
+        ]
+    },
+    "default_backends": []
+}

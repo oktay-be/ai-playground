@@ -39,7 +39,7 @@ async def main():
     # kernel.register_memory_store(memory_store=MilvusMemoryStore()) 
     
     generateContent = kernel.import_semantic_skill_from_directory(
-        "ai/skills", "generateContent"
+        "ai_cascade_rag/skills", "generateContent"
     )
 
     # Main input
@@ -104,7 +104,6 @@ async def main():
     TableOfContents = generateContent['TableOfContents']
     tableOfContents = TableOfContents(variables=context_variables)
 
-    tableOfContents_deserialized = json.loads(tableOfContents)
 
     context_variables["relevance"] = 0.7
     context_variables["collection"] = "resourceEssay"
@@ -113,25 +112,19 @@ async def main():
     context[sk.core_skills.TextMemorySkill.COLLECTION_PARAM] = "resourceEssay"
     context[sk.core_skills.TextMemorySkill.RELEVANCE_PARAM] = 0.7
    
-    rendered_essay_list = ["title"]
+    rendered_article_list = [context_variables['title']]
 
-    table_of_contents_deserialized = json.loads(tableOfContents)
+    table_of_contents_deserialized = json.loads(tableOfContents.result)
+
 
     Chapter = generateContent["Chapter"]
     for chapter in table_of_contents_deserialized:
-        # context_variables['chapter'] = chapter['chapter']
-        searched = await kernel.memory.search_async("resourceEssay", chapter['chapter'], min_relevance_score=0.7)
-        context_variables['searched'] = searched[0].text
         context_variables['chapter'] = chapter['chapter']
-        context["searched"] = searched[0].text
-        context["chapter"] = chapter['chapter']
-        # gen_chapter = Validator.validate(Chapter(variables=context_variables))
-        # gen_chapter = Validator.validate(Chapter(variables=context.variables))
-        gen_chapter2 = await kernel.run_async(Chapter, input_vars=context_variables)
-        rendered_essay_list.append(gen_chapter2.result)
-        # rendered_essay_list.append(gen_chapter)
-
-        # TODO: Debug if recall worked
+        context_variables["sub_topics"] = "\n".join(f"- {element}" for element in chapter["topics"])
+        # generated_chapter = Chapter(variables=context_variables)
+        generated_chapter = await kernel.run_async(Chapter, input_vars=context_variables)
+        print(generated_chapter.result)
+        rendered_article_list.append(generated_chapter.result)
 
     # Get the current date and time
     now = datetime.now()
@@ -141,7 +134,7 @@ async def main():
     # Append the timestamp to the filename
     filename = f'essay_debug_{timestamp}.txt'
 
-    rendered_essay = "\n".join(rendered_essay_list)
+    rendered_essay = "\n".join(rendered_article_list)
 
     with open(filename, 'w') as f:
         f.write(rendered_essay)

@@ -35,7 +35,7 @@ async def main():
     kernel.add_text_embedding_generation_service("ada", azure_embedding_service)
     
     generateContent = kernel.import_semantic_skill_from_directory(
-        "ai/skills", "generateContent"
+        "ai_cascade/skills", "generateContent"
     )
 
     # Main input

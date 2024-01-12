@@ -17,7 +17,7 @@ from utils.constants import (
     OPENAI_API_KEY,
     OPENAI_EMBEDDING_MODEL_NAME,
 )
-from ai_nested.skills.WriteAnEssay.Orchestrator import Orchestrator
+from ai.skills.WriteAnEssay.Orchestrator import Orchestrator
 
 class KernelConfig:
     def __init__(self):
