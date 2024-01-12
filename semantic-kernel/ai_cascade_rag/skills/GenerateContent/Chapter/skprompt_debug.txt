@@ -1,0 +1,13 @@
+THIS PROMPT HAS FOLLOWING INPUTS:
++++++
+TOPIC:{{$topic}}
+TITLE:{{$title}}
+SUBTITLE:{{$sub_title}}
+SUBTOPICS:
+{{$sub_topics}}
+CHAPTER: {{$chapter}}
+CONTEXT:
+{{Recall  $chapter}}
++++++
+
+AS RESPONSE, PRINT ALL INPUTS WITH THEIR VALUES. IF AN INPUT HAS EMPTY VALUE, SPECIFY ITS VALUE AS "EMPTY"
