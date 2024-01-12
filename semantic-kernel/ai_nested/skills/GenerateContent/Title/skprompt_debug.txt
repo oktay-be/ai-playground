@@ -1,0 +1,11 @@
+I HAVE TWO VARIABLES:
+
+variable 1: {{$topic_type}}
+variable 2: {{$input}}
+
+
+PRINT THOSE TWO VARIABLES AS OUTPUT:
+variable 1:
+variable 2:
+
+If ANY OF THEM IS EMPTY, THEN PRINT "empty" FOR THE VALUE

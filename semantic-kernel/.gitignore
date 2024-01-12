@@ -2,3 +2,4 @@ __pycache__/
 .env
 *cpython-310.pyc
 resources/
+semantic-kernel-docs/
